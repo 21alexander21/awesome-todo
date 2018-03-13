@@ -1,0 +1,23 @@
+.todo-item {
+    padding: 0 40px;
+    transition: all 0.3s ease-in;
+    cursor: pointer;
+    outline: none;
+}
+
+.todo-item:hover {
+    background-color: rgba(0, 0, 0, 0.06);
+}
+
+.todo-item__inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #dfdede;
+}
+
+.todo-item__name--done {
+    text-decoration: line-through;
+    color: #8b8b8b;
+}

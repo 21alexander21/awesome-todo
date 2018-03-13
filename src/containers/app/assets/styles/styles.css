@@ -1,0 +1,16 @@
+.app {
+    max-width: 500px;
+    margin: 70px auto;
+    background-color: #fff;
+    padding: 20px 40px 40px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(0, 0, 0, 0.1);
+}
+
+.app__header {
+
+}
+
+.app__list {
+    margin-left: -40px;
+    margin-right: -40px;
+}
