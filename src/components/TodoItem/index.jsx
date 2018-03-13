@@ -5,10 +5,11 @@ import MenuItem from '@skbkontur/react-ui/MenuItem';
 import Input from '@skbkontur/react-ui/Input';
 import './assets/styles/styles.css';
 
-const isClickOnKebab = nativeClickEvent =>
-  nativeClickEvent.path.some(item => item.dataset && item.dataset.kebab);
-
 export default class TodoItem extends React.Component {
+  static isClickOnKebab(nativeClickEvent) {
+    return nativeClickEvent.path.some(item => item.dataset && item.dataset.kebab);
+  }
+
   constructor(props) {
     super(props);
 
@@ -22,7 +23,7 @@ export default class TodoItem extends React.Component {
 
     this.state = {
       onEditing: false,
-      editableName: props.todoData.name,
+      editableName: props.todoData ? props.todoData.name : '',
     };
   }
 
@@ -83,12 +84,15 @@ export default class TodoItem extends React.Component {
   }
 
   todoClickHandler(event) {
-    if (!isClickOnKebab(event.nativeEvent)) {
+    if (!this.isClickOnKebab(event.nativeEvent)) {
       this.toggleStatus();
     }
   }
 
   render() {
+    if (!this.props.todoData) {
+      return null;
+    }
     return (
       <div
         className="todo-item"

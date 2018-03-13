@@ -8,4 +8,18 @@ const isValidTodoName = (name) => {
   return false;
 };
 
-export const isValidTodo = todo => isValidTodoName(todo.name);
+const todoHasRequiredField = (todo, requiredField) => requiredField.every(fieldName =>
+  Object.prototype.hasOwnProperty.call(todo, fieldName));
+
+export const isValidTodo = (todo) => {
+  if (!todo || typeof todo !== 'object') {
+    return false;
+  }
+
+  if (!todoHasRequiredField(todo, ['name', 'id'])) {
+    return false;
+  }
+
+  return isValidTodoName(todo.name);
+};
+
