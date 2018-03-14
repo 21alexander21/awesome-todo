@@ -65,7 +65,7 @@ class Navigation extends React.Component<NavigationProps> {
     this.props.history.push(newLocation);
   }
 
-  tabsChangeHandler(event: SyntheticEvent<any>, filter: string): void {
+  tabsChangeHandler = (event: SyntheticEvent<any>, filter: string): void => {
     this.changeLocation(filter);
   }
 
