@@ -32,25 +32,25 @@ export default class TodoItem extends React.Component<TodoItemProps, TodoItemSta
       onEditing: false,
       editableName: props.todoData ? props.todoData.name : '',
     };
-
-    this.isClickOnKebab = (nativeClickEvent: MouseEvent): boolean =>
-      nativeClickEvent.path.some(item => item.dataset && item.dataset.kebab);
   }
 
   field: ?Input;
 
   makeEditable() {
-    this.setState({
-      onEditing: true,
-    }, () => {
-      if (this.field) {
-        this.field.focus();
-        this.field.setSelectionRange(0, this.state.editableName.length);
-      }
-    });
+    this.setState(
+      {
+        onEditing: true,
+      },
+      () => {
+        if (this.field) {
+          this.field.focus();
+          this.field.setSelectionRange(0, this.state.editableName.length);
+        }
+      },
+    );
   }
 
-  changeHandler(event: SyntheticEvent<Input>): void {
+  changeHandler(event: SyntheticEvent): void {
     const newName: string = event.target.value;
 
     this.setState({
@@ -59,11 +59,14 @@ export default class TodoItem extends React.Component<TodoItemProps, TodoItemSta
   }
 
   submitName() {
-    this.setState({
-      onEditing: false,
-    }, () => {
-      this.props.operations.changeTodoName(this.props.todoData.id, this.state.editableName);
-    });
+    this.setState(
+      {
+        onEditing: false,
+      },
+      () => {
+        this.props.operations.changeTodoName(this.props.todoData.id, this.state.editableName);
+      },
+    );
   }
 
   cancel() {
@@ -91,10 +94,8 @@ export default class TodoItem extends React.Component<TodoItemProps, TodoItemSta
     this.props.operations.removeTodo(this.props.todoData.id);
   }
 
-  todoClickHandler(event: SyntheticEvent<HTMLDivElement>) {
-    if (!this.isClickOnKebab(event.nativeEvent)) {
-      this.toggleStatus();
-    }
+  todoClickHandler() {
+    this.toggleStatus();
   }
 
   render() {
@@ -130,7 +131,13 @@ export default class TodoItem extends React.Component<TodoItemProps, TodoItemSta
               {this.props.todoData.name}
             </span>
           )}
-          <span data-kebab>
+          <span
+            onClick={(event: Event): void => event.stopPropagation()}
+            onDoubleClick={(event: Event): void => event.stopPropagation()}
+            onKeyPress={() => {}}
+            role="button"
+            tabIndex="-1"
+          >
             <Kebab>
               <MenuItem icon="edit" onClick={this.makeEditable}>
                 Edit

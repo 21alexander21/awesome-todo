@@ -52,11 +52,6 @@ describe('Компонент <TodoItem />', () => {
       },
     });
 
-    const isClickOnKebabFake = jest.fn().mockReturnValue(false);
-
-    component.instance().isClickOnKebab = isClickOnKebabFake;
-    component.update();
-
     component.simulate('click');
 
     expect(component.props().operations.toggleStatus).toBeCalledWith(normalTodoData.id);
