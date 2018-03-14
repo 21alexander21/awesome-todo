@@ -12,6 +12,7 @@ type NavigationProps = {
   history: {
     push: (string) => void,
   },
+  fetching: boolean,
 };
 
 const getFilterFromLocation = (location) => {
@@ -30,6 +31,20 @@ const getFilterFromLocation = (location) => {
 class Navigation extends React.Component<NavigationProps> {
   static defaultProps = {
     className: null,
+  }
+
+  getClassName() {
+    const classNames = ['navigation'];
+
+    if (this.props.className) {
+      classNames.push(this.props.className);
+    }
+
+    if (this.props.fetching) {
+      classNames.push('navigation--fetching');
+    }
+
+    return classNames.join(' ');
   }
 
   changeLocation(filter: string): void {
@@ -56,7 +71,7 @@ class Navigation extends React.Component<NavigationProps> {
 
   render() {
     return (
-      <div className={`navigation ${this.props.className ? this.props.className : ''}`}>
+      <div className={this.getClassName()}>
         <Tabs
           value={getFilterFromLocation(this.props.location)}
           onChange={this.tabsChangeHandler}

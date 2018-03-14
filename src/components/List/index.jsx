@@ -1,6 +1,7 @@
 // @flow
 import * as React from 'react';
 import { withRouter } from 'react-router';
+import Spinner from '@skbkontur/react-ui/Spinner';
 import TodoItem from '../TodoItem';
 import type { Todo } from '../../utils/types';
 import './assets/styles/styles.css';
@@ -14,6 +15,7 @@ type ListProps = {
     }
   },
   operations: { [string]: Function },
+  fetching: boolean,
 };
 
 const getFilteredTodos = (todos: Array<Todo>, filter: ?string) => {
@@ -35,6 +37,13 @@ const List = (props: ListProps) => {
 
   return (
     <ul className={`list ${props.className ? props.className : ''}`}>
+      {props.fetching &&
+        <div className="list__spinner-container">
+          <Spinner
+            caption="Спиннер крутиться - тудушки грузятся..."
+          />
+        </div>
+      }
       {todos.map(item => (
         <li className="list__item" key={item.id}>
           <TodoItem todoData={item} operations={props.operations} />

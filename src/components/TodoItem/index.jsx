@@ -50,7 +50,7 @@ export default class TodoItem extends React.Component<TodoItemProps, TodoItemSta
     );
   }
 
-  changeHandler(event: SyntheticEvent): void {
+  changeHandler(event: SyntheticKeyboardEvent<HTMLInputElement>): void {
     const newName: string = event.target.value;
 
     this.setState({

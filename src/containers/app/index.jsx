@@ -26,7 +26,16 @@ const fakeData = [
   },
 ];
 
-export default class App extends React.Component<{}, { todos: Array<Todo> }> {
+const fakeFetch = () => new Promise(resolve => setTimeout(() => {
+  resolve(fakeData);
+}, 1500));
+
+type AppState = {
+  todos: Array<Todo>,
+  fetching: boolean,
+};
+
+export default class App extends React.Component<{}, AppState> {
   constructor(props: {}) {
     super(props);
 
@@ -37,8 +46,26 @@ export default class App extends React.Component<{}, { todos: Array<Todo> }> {
     (this: any).renderTodosList = this.renderTodosList.bind(this);
 
     this.state = {
-      todos: fakeData,
+      todos: [],
+      fetching: false,
     };
+  }
+
+  componentDidMount() {
+    this.loadData();
+  }
+
+  loadData() {
+    this.setState({
+      fetching: true,
+    }, () => {
+      fakeFetch().then((result) => {
+        this.setState({
+          fetching: false,
+          todos: result,
+        });
+      });
+    });
   }
 
   createTodo(name: string): void {
@@ -103,6 +130,7 @@ export default class App extends React.Component<{}, { todos: Array<Todo> }> {
           changeTodoName: this.changeTodoName,
           toggleStatus: this.toggleStatus,
         }}
+        fetching={this.state.fetching}
       />
     );
   }
@@ -112,7 +140,7 @@ export default class App extends React.Component<{}, { todos: Array<Todo> }> {
       <Router>
         <div className="app">
           <Header className="app__header" createTodo={this.createTodo} />
-          <Navigation className="app__navigation" />
+          <Navigation className="app__navigation" fetching={this.state.fetching} />
           <Switch>
             <Route exact path="/" render={this.renderTodosList} />
             <Route exact path="/:filter" render={this.renderTodosList} />

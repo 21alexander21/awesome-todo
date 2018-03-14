@@ -5,3 +5,7 @@
     border-bottom: 1px solid #dfdede;
     text-align: center;
 }
+
+.navigation--fetching {
+    opacity: 0.6;
+}

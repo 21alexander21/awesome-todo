@@ -7,3 +7,8 @@
 .list__item {
     padding: 0;
 }
+
+.list__spinner-container {
+    margin: 25px auto 0;
+    text-align: center;
+}
