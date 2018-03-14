@@ -1,13 +1,11 @@
+// @flow
 import React from 'react';
-import {
-  BrowserRouter as Router,
-  Route,
-  Switch,
-} from 'react-router-dom';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import Header from '../../components/Header';
 import List from '../../components/List';
 import Navigation from '../../components/Navigation';
 import { makeId, isValidTodo } from '../../utils';
+import type { Todo } from '../../utils/types';
 import './assets/styles/styles.css';
 
 const fakeData = [
@@ -28,23 +26,23 @@ const fakeData = [
   },
 ];
 
-export default class App extends React.Component {
-  constructor(props) {
+export default class App extends React.Component<{}, { todos: Array<Todo> }> {
+  constructor(props: {}) {
     super(props);
 
-    this.createTodo = this.createTodo.bind(this);
-    this.changeTodoName = this.changeTodoName.bind(this);
-    this.toggleStatus = this.toggleStatus.bind(this);
-    this.removeTodo = this.removeTodo.bind(this);
-    this.renderTodosList = this.renderTodosList.bind(this);
+    (this: any).createTodo = this.createTodo.bind(this);
+    (this: any).changeTodoName = this.changeTodoName.bind(this);
+    (this: any).toggleStatus = this.toggleStatus.bind(this);
+    (this: any).removeTodo = this.removeTodo.bind(this);
+    (this: any).renderTodosList = this.renderTodosList.bind(this);
 
     this.state = {
       todos: fakeData,
     };
   }
 
-  createTodo(name) {
-    const newTodo = {
+  createTodo(name: string): void {
+    const newTodo: Todo = {
       name,
       id: makeId(),
       done: false,
@@ -57,7 +55,7 @@ export default class App extends React.Component {
     }
   }
 
-  changeTodoName(id, newName) {
+  changeTodoName(id: string, newName: string) {
     this.setState(prevState => ({
       todos: [
         ...prevState.todos.map((item) => {
@@ -73,7 +71,7 @@ export default class App extends React.Component {
     }));
   }
 
-  toggleStatus(id) {
+  toggleStatus(id: string) {
     this.setState(prevState => ({
       todos: [
         ...prevState.todos.map((item) => {
@@ -89,7 +87,7 @@ export default class App extends React.Component {
     }));
   }
 
-  removeTodo(id) {
+  removeTodo(id: string) {
     this.setState(prevState => ({
       todos: [...prevState.todos.filter(item => item.id !== id)],
     }));
@@ -116,16 +114,8 @@ export default class App extends React.Component {
           <Header className="app__header" createTodo={this.createTodo} />
           <Navigation className="app__navigation" />
           <Switch>
-            <Route
-              exact
-              path="/"
-              render={this.renderTodosList}
-            />
-            <Route
-              exact
-              path="/:filter"
-              render={this.renderTodosList}
-            />
+            <Route exact path="/" render={this.renderTodosList} />
+            <Route exact path="/:filter" render={this.renderTodosList} />
           </Switch>
         </div>
       </Router>

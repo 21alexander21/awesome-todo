@@ -1,10 +1,22 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+// @flow
+import * as React from 'react';
 import { withRouter } from 'react-router';
 import TodoItem from '../TodoItem';
+import type { Todo } from '../../utils/types';
 import './assets/styles/styles.css';
 
-const getFilteredTodos = (todos, filter) => {
+type ListProps = {
+  className?: string,
+  todos: Array<Todo>,
+  match: {
+    params: {
+      filter?: string,
+    }
+  },
+  operations: { [string]: Function },
+};
+
+const getFilteredTodos = (todos: Array<Todo>, filter: ?string) => {
   switch (filter) {
     case 'active':
       return todos.filter(item => !item.done);
@@ -17,12 +29,12 @@ const getFilteredTodos = (todos, filter) => {
   }
 };
 
-const List = (props) => {
+const List = (props: ListProps) => {
   const { filter = null } = props.match.params;
   const todos = getFilteredTodos(props.todos, filter);
 
   return (
-    <ul className={`list ${props.className ? props.className : props.className}`}>
+    <ul className={`list ${props.className ? props.className : ''}`}>
       {todos.map(item => (
         <li className="list__item" key={item.id}>
           <TodoItem todoData={item} operations={props.operations} />
@@ -30,20 +42,6 @@ const List = (props) => {
       ))}
     </ul>
   );
-};
-
-List.propTypes = {
-  className: PropTypes.string,
-  todos: PropTypes.arrayOf(PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    name: PropTypes.string.isRequired,
-  })).isRequired,
-  operations: PropTypes.objectOf(PropTypes.func).isRequired,
-  match: PropTypes.shape({
-    params: PropTypes.shape({
-      filter: PropTypes.string,
-    }).isRequired,
-  }).isRequired,
 };
 
 List.defaultProps = {

@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@skbkontur/react-ui": "^0.16.0",
+    "flow-bin": "^0.67.1",
     "prop-types": "^15.6.1",
     "react": "^16.2.0",
     "react-addons-css-transition-group": "^15.6.2",
@@ -16,12 +17,18 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "flow": "flow"
   },
   "eslintConfig": {
     "extends": [
-      "airbnb"
+      "airbnb",
+      "plugin:flowtype/recommended"
     ],
+    "plugins": [
+      "flowtype"
+    ],
+    "parser": "babel-eslint",
     "rules": {
       "linebreak-style": 0
     },
@@ -33,10 +40,12 @@
     "setupTests.js"
   ],
   "devDependencies": {
+    "babel-eslint": "^8.2.2",
     "enzyme": "^3.3.0",
     "enzyme-adapter-react-16": "^1.1.1",
     "eslint": "^4.18.2",
     "eslint-config-airbnb": "^16.1.0",
+    "eslint-plugin-flowtype": "^2.46.1",
     "eslint-plugin-import": "^2.9.0",
     "eslint-plugin-jsx-a11y": "^6.0.3",
     "eslint-plugin-react": "^7.7.0",

@@ -1,8 +1,18 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+// @flow
+import * as React from 'react';
 import { withRouter } from 'react-router';
 import Tabs from '@skbkontur/react-ui/Tabs';
 import './assets/styles/styles.css';
+
+type NavigationProps = {
+  className?: string,
+  location: {
+    pathname: string,
+  },
+  history: {
+    push: (string) => void,
+  },
+};
 
 const getFilterFromLocation = (location) => {
   switch (location.pathname) {
@@ -17,9 +27,13 @@ const getFilterFromLocation = (location) => {
   }
 };
 
-class Navigation extends React.Component {
-  changeLocation(filter) {
-    let newLocation = '/';
+class Navigation extends React.Component<NavigationProps> {
+  static defaultProps = {
+    className: null,
+  }
+
+  changeLocation(filter: string): void {
+    let newLocation: string = '/';
     switch (filter) {
       case 'active':
         newLocation = '/active';
@@ -36,12 +50,16 @@ class Navigation extends React.Component {
     this.props.history.push(newLocation);
   }
 
+  tabsChangeHandler(event: SyntheticEvent<any>, filter: string): void {
+    this.changeLocation(filter);
+  }
+
   render() {
     return (
       <div className={`navigation ${this.props.className ? this.props.className : ''}`}>
         <Tabs
           value={getFilterFromLocation(this.props.location)}
-          onChange={(event, filter) => this.changeLocation(filter)}
+          onChange={this.tabsChangeHandler}
         >
           <Tabs.Tab id="default">All</Tabs.Tab>
           <Tabs.Tab id="active">Active</Tabs.Tab>
@@ -51,17 +69,5 @@ class Navigation extends React.Component {
     );
   }
 }
-
-Navigation.propTypes = {
-  className: PropTypes.string,
-  location: PropTypes.shape({}).isRequired,
-  history: PropTypes.shape({
-    push: PropTypes.func.isRequired,
-  }).isRequired,
-};
-
-Navigation.defaultProps = {
-  className: null,
-};
 
 export default withRouter(Navigation);

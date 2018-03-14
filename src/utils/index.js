@@ -1,6 +1,12 @@
-export const makeId = (length = 9) => `_${Math.random().toString(36).substr(2, length)}`;
+// @flow
+import type { Todo } from './types';
 
-const isValidTodoName = (name) => {
+export const makeId = (length: number = 9) =>
+  `_${Math.random()
+    .toString(36)
+    .substr(2, length)}`;
+
+const isValidTodoName = (name: string): boolean => {
   if (name.replace(/\s/g, '').length) {
     return true;
   }
@@ -8,10 +14,10 @@ const isValidTodoName = (name) => {
   return false;
 };
 
-const todoHasRequiredField = (todo, requiredField) => requiredField.every(fieldName =>
-  Object.prototype.hasOwnProperty.call(todo, fieldName));
+const todoHasRequiredField = (todo, requiredField) =>
+  requiredField.every(fieldName => Object.prototype.hasOwnProperty.call(todo, fieldName));
 
-export const isValidTodo = (todo) => {
+export const isValidTodo = (todo: Todo) => {
   if (!todo || typeof todo !== 'object') {
     return false;
   }
@@ -22,4 +28,3 @@ export const isValidTodo = (todo) => {
 
   return isValidTodoName(todo.name);
 };
-

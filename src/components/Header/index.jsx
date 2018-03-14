@@ -1,28 +1,44 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+// @flow
+import * as React from 'react';
 import Group from '@skbkontur/react-ui/Group';
 import Input from '@skbkontur/react-ui/Input';
 import Button from '@skbkontur/react-ui/Button';
 import './assets/styles/styles.css';
 
-export default class Header extends React.Component {
-  constructor(props) {
+type HeaderProps = {
+  createTodo: (name: string) => void,
+  className?: string,
+  defaultNewTodoName?: string,
+};
+
+type HeaderState = {
+  newTodoName: ?string,
+};
+
+export default class Header extends React.Component<HeaderProps, HeaderState> {
+  static defaultProps = {
+    className: null,
+    defaultNewTodoName: '',
+  }
+
+  constructor(props: HeaderProps) {
     super(props);
 
-    this.changeHandler = this.changeHandler.bind(this);
-    this.submitHandler = this.submitHandler.bind(this);
+    (this: any).changeHandler = this.changeHandler.bind(this);
+    (this: any).submitHandler = this.submitHandler.bind(this);
 
-    this.fieldName = 'newTodoName';
 
     this.state = {
-      newTodoName: props.defaultNewTodoName,
+      newTodoName: props.defaultNewTodoName || '',
     };
   }
 
-  submitHandler(event) {
+  fieldName: string = 'newTodoName';
+
+  submitHandler(event: SyntheticKeyboardEvent<HTMLButtonElement>) {
     event.preventDefault();
     const { newTodoName } = this.state;
-    if (typeof this.props.createTodo === 'function') {
+    if (typeof this.props.createTodo === 'function' && !!newTodoName) {
       this.setState(
         {
           newTodoName: this.props.defaultNewTodoName,
@@ -32,13 +48,13 @@ export default class Header extends React.Component {
     }
   }
 
-  changeNewTodoName(name) {
+  changeNewTodoName(name: string) {
     this.setState({
       newTodoName: name,
     });
   }
 
-  changeHandler(event) {
+  changeHandler(event: { target: { id: string, value: string } }) {
     if (event.target.id === this.fieldName) {
       this.changeNewTodoName(event.target.value);
     }
@@ -71,14 +87,3 @@ export default class Header extends React.Component {
     );
   }
 }
-
-Header.propTypes = {
-  className: PropTypes.string,
-  defaultNewTodoName: PropTypes.string,
-  createTodo: PropTypes.func.isRequired,
-};
-
-Header.defaultProps = {
-  className: null,
-  defaultNewTodoName: '',
-};

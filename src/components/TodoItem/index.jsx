@@ -1,46 +1,57 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+// @flow
+import * as React from 'react';
 import Kebab from '@skbkontur/react-ui/Kebab';
 import MenuItem from '@skbkontur/react-ui/MenuItem';
 import Input from '@skbkontur/react-ui/Input';
+import type { Todo, Operations } from '../../utils/types';
 import './assets/styles/styles.css';
 
-export default class TodoItem extends React.Component {
-  static isClickOnKebab(nativeClickEvent) {
-    return nativeClickEvent.path.some(item => item.dataset && item.dataset.kebab);
-  }
+type TodoItemProps = {
+  todoData: Todo,
+  operations: Operations,
+};
 
-  constructor(props) {
+type TodoItemState = {
+  onEditing: boolean,
+  editableName: $PropertyType<Todo, 'name'>,
+};
+
+export default class TodoItem extends React.Component<TodoItemProps, TodoItemState> {
+  constructor(props: TodoItemProps) {
     super(props);
 
-    this.makeEditable = this.makeEditable.bind(this);
-    this.changeHandler = this.changeHandler.bind(this);
-    this.submitName = this.submitName.bind(this);
-    this.keyDownHandler = this.keyDownHandler.bind(this);
-    this.toggleStatus = this.toggleStatus.bind(this);
-    this.removeItem = this.removeItem.bind(this);
-    this.todoClickHandler = this.todoClickHandler.bind(this);
+    (this: any).makeEditable = this.makeEditable.bind(this);
+    (this: any).changeHandler = this.changeHandler.bind(this);
+    (this: any).submitName = this.submitName.bind(this);
+    (this: any).keyDownHandler = this.keyDownHandler.bind(this);
+    (this: any).toggleStatus = this.toggleStatus.bind(this);
+    (this: any).removeItem = this.removeItem.bind(this);
+    (this: any).todoClickHandler = this.todoClickHandler.bind(this);
 
     this.state = {
       onEditing: false,
       editableName: props.todoData ? props.todoData.name : '',
     };
+
+    this.isClickOnKebab = (nativeClickEvent: MouseEvent): boolean =>
+      nativeClickEvent.path.some(item => item.dataset && item.dataset.kebab);
   }
+
+  field: ?Input;
 
   makeEditable() {
-    this.setState(
-      {
-        onEditing: true,
-      },
-      () => {
+    this.setState({
+      onEditing: true,
+    }, () => {
+      if (this.field) {
         this.field.focus();
         this.field.setSelectionRange(0, this.state.editableName.length);
-      },
-    );
+      }
+    });
   }
 
-  changeHandler(event) {
-    const newName = event.target.value;
+  changeHandler(event: SyntheticEvent<Input>): void {
+    const newName: string = event.target.value;
 
     this.setState({
       editableName: newName,
@@ -48,14 +59,11 @@ export default class TodoItem extends React.Component {
   }
 
   submitName() {
-    this.setState(
-      {
-        onEditing: false,
-      },
-      () => {
-        this.props.operations.changeTodoName(this.props.todoData.id, this.state.editableName);
-      },
-    );
+    this.setState({
+      onEditing: false,
+    }, () => {
+      this.props.operations.changeTodoName(this.props.todoData.id, this.state.editableName);
+    });
   }
 
   cancel() {
@@ -65,7 +73,7 @@ export default class TodoItem extends React.Component {
     });
   }
 
-  keyDownHandler(event) {
+  keyDownHandler(event: SyntheticKeyboardEvent<Input>) {
     if (event.keyCode === 27 || event.key === 'Escape') {
       this.cancel();
     }
@@ -83,7 +91,7 @@ export default class TodoItem extends React.Component {
     this.props.operations.removeTodo(this.props.todoData.id);
   }
 
-  todoClickHandler(event) {
+  todoClickHandler(event: SyntheticEvent<HTMLDivElement>) {
     if (!this.isClickOnKebab(event.nativeEvent)) {
       this.toggleStatus();
     }
@@ -140,12 +148,3 @@ export default class TodoItem extends React.Component {
     );
   }
 }
-
-TodoItem.propTypes = {
-  todoData: PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    name: PropTypes.string.isRequired,
-    done: PropTypes.bool.isRequired,
-  }).isRequired,
-  operations: PropTypes.objectOf(PropTypes.func).isRequired,
-};
