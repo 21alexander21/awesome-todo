@@ -22,9 +22,25 @@ export const isValidTodo = (todo: Todo) => {
     return false;
   }
 
-  if (!todoHasRequiredField(todo, ['name', 'id'])) {
+  if (!todoHasRequiredField(todo, ['name'])) {
     return false;
   }
 
   return isValidTodoName(todo.name);
 };
+
+export const asyncCreateTodo = (name: string): Promise<any> => new Promise((resolve, reject) => {
+  setTimeout(() => {
+    if (isValidTodoName(name)) {
+      const todo = {
+        name,
+        id: makeId(),
+        done: false,
+      };
+
+      resolve(todo);
+    }
+
+    reject(new Error('Не валидное имя тудушки'));
+  }, 1000);
+});

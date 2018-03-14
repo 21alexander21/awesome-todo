@@ -14,14 +14,6 @@ describe('валидация тудушек', () => {
     expect(isValidTodo(badTodo)).toBeFalsy();
   });
 
-  it('тудушка без идентификатора не пройдет', () => {
-    const badTodo = {
-      name: 'Сделай это',
-    };
-
-    expect(isValidTodo(badTodo)).toBeFalsy();
-  });
-
   it('Правильная тудушка вернет true', () => {
     const greatTodo = {
       id: '12s',

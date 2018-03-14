@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import Header from '../../components/Header';
 import List from '../../components/List';
 import Navigation from '../../components/Navigation';
-import { makeId, isValidTodo } from '../../utils';
+import { makeId, asyncCreateTodo } from '../../utils';
 import type { Todo } from '../../utils/types';
 import './assets/styles/styles.css';
 
@@ -69,17 +69,20 @@ export default class App extends React.Component<{}, AppState> {
   }
 
   createTodo(name: string): void {
-    const newTodo: Todo = {
-      name,
-      id: makeId(),
-      done: false,
-    };
-
-    if (isValidTodo(newTodo)) {
-      this.setState(prevState => ({
-        todos: [...prevState.todos, newTodo],
-      }));
-    }
+    this.setState({
+      fetching: true,
+    }, () => {
+      asyncCreateTodo(name).then((resultTodo) => {
+        this.setState(prevState => ({
+          todos: [...prevState.todos, resultTodo],
+          fetching: false,
+        }));
+      }).catch(() => {
+        this.setState({
+          fetching: false,
+        });
+      });
+    });
   }
 
   changeTodoName(id: string, newName: string) {
