@@ -35,8 +35,11 @@ export default class Header extends React.Component<HeaderProps, HeaderState> {
 
   fieldName: string = 'newTodoName';
 
-  submitHandler(event: SyntheticKeyboardEvent<HTMLButtonElement>) {
-    event.preventDefault();
+  submitHandler(event: ?SyntheticKeyboardEvent<HTMLButtonElement>) {
+    if (event) {
+      event.preventDefault();
+    }
+
     const { newTodoName } = this.state;
     if (typeof this.props.createTodo === 'function' && !!newTodoName) {
       this.setState(

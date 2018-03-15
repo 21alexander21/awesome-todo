@@ -33,4 +33,44 @@ describe('Компонент <Header />', () => {
 
     expect(component.instance().changeNewTodoName).toBeCalledWith('New Name');
   });
+
+  it('Введенное имя записывается в локальный state', () => {
+    const component = fullRenderComponent();
+    component.find('input').simulate(
+      'change',
+      {
+        target: {
+          id: component.instance().fieldName,
+          value: 'Новая тудушка',
+        },
+      },
+    );
+
+    expect(component.state('newTodoName')).toEqual('Новая тудушка');
+  });
+
+  it('createTodo вызывается с текущим стэйтом', () => {
+    const component = renderComponent();
+
+    component.setState({ newTodoName: 'Новое имя' });
+    component.instance().submitHandler();
+
+    expect(component.instance().props.createTodo).toBeCalledWith('Новое имя');
+  });
+
+  it('После сабмита имя возвращается к дефолтному', () => {
+    const component = renderComponent();
+    const defaultName = component.state('newTodoName');
+
+    component.setState({ newTodoName: 'Новое имя 43 52' });
+    component.instance().submitHandler();
+
+    expect(component.state('newTodoName')).toEqual(defaultName);
+  });
+
+  it('Компонент принимает дефолтное новое имя', () => {
+    const component = renderComponent({ defaultNewTodoName: 'Дефолтное новое имя' });
+
+    expect(component.state('newTodoName')).toEqual('Дефолтное новое имя');
+  });
 });

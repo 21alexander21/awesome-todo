@@ -4,31 +4,9 @@ import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import Header from '../../components/Header';
 import List from '../../components/List';
 import Navigation from '../../components/Navigation';
-import { makeId, asyncCreateTodo } from '../../utils';
+import { FakeApi } from '../../utils';
 import type { Todo } from '../../utils/types';
 import './assets/styles/styles.css';
-
-const fakeData = [
-  {
-    id: makeId(),
-    name: 'test1',
-    done: false,
-  },
-  {
-    id: makeId(),
-    name: 'test2',
-    done: false,
-  },
-  {
-    id: makeId(),
-    name: 'test3',
-    done: true,
-  },
-];
-
-const fakeFetch = () => new Promise(resolve => setTimeout(() => {
-  resolve(fakeData);
-}, 1500));
 
 type AppState = {
   todos: Array<Todo>,
@@ -55,11 +33,13 @@ export default class App extends React.Component<{}, AppState> {
     this.loadData();
   }
 
+  api = new FakeApi();
+
   loadData() {
     this.setState({
       fetching: true,
     }, () => {
-      fakeFetch().then((result) => {
+      this.api.getAllTodos().then((result) => {
         this.setState({
           fetching: false,
           todos: result,
@@ -72,7 +52,7 @@ export default class App extends React.Component<{}, AppState> {
     this.setState({
       fetching: true,
     }, () => {
-      asyncCreateTodo(name).then((resultTodo) => {
+      this.api.createTodo(name).then((resultTodo) => {
         this.setState(prevState => ({
           todos: [...prevState.todos, resultTodo],
           fetching: false,
