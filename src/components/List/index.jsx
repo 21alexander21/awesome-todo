@@ -12,7 +12,7 @@ type ListProps = {
   match: {
     params: {
       filter?: string,
-    }
+    },
   },
   operations: { [string]: Function },
   fetching: boolean,
@@ -37,13 +37,11 @@ const List = (props: ListProps) => {
 
   return (
     <ul className={`list ${props.className ? props.className : ''}`}>
-      {props.fetching &&
+      {props.fetching && (
         <div className="list__spinner-container">
-          <Spinner
-            caption="Спиннер крутиться - тудушки грузятся..."
-          />
+          <Spinner caption="Спиннер крутиться - тудушки грузятся..." />
         </div>
-      }
+      )}
       {todos.map(item => (
         <li className="list__item" key={item.id}>
           <TodoItem todoData={item} operations={props.operations} />

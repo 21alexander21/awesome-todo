@@ -21,24 +21,18 @@
     "flow": "flow"
   },
   "eslintConfig": {
-    "extends": [
-      "airbnb",
-      "plugin:flowtype/recommended"
-    ],
-    "plugins": [
-      "flowtype"
-    ],
+    "extends": ["airbnb", "plugin:flowtype/recommended"],
+    "plugins": ["flowtype"],
     "parser": "babel-eslint",
     "rules": {
       "linebreak-style": 0
     },
     "env": {
-      "jest": true
+      "jest": true,
+      "browser": true
     }
   },
-  "eslintIgnore": [
-    "setupTests.js"
-  ],
+  "eslintIgnore": ["setupTests.js"],
   "devDependencies": {
     "babel-eslint": "^8.2.2",
     "enzyme": "^3.3.0",

@@ -7,7 +7,7 @@ import './assets/styles/styles.css';
 
 type HeaderProps = {
   createTodo: (name: string) => void,
-  className?: string,
+  className: string,
   defaultNewTodoName?: string,
 };
 
@@ -19,14 +19,13 @@ export default class Header extends React.Component<HeaderProps, HeaderState> {
   static defaultProps = {
     className: null,
     defaultNewTodoName: '',
-  }
+  };
 
   constructor(props: HeaderProps) {
     super(props);
 
     (this: any).changeHandler = this.changeHandler.bind(this);
     (this: any).submitHandler = this.submitHandler.bind(this);
-
 
     this.state = {
       newTodoName: props.defaultNewTodoName || '',
@@ -42,9 +41,12 @@ export default class Header extends React.Component<HeaderProps, HeaderState> {
 
     const { newTodoName } = this.state;
     if (typeof this.props.createTodo === 'function' && !!newTodoName) {
-      this.setState({
-        newTodoName: this.props.defaultNewTodoName,
-      }, () => this.props.createTodo(newTodoName));
+      this.setState(
+        {
+          newTodoName: this.props.defaultNewTodoName,
+        },
+        () => this.props.createTodo(newTodoName),
+      );
     }
   }
 
@@ -55,6 +57,7 @@ export default class Header extends React.Component<HeaderProps, HeaderState> {
   }
 
   changeHandler(event: { target: { id: string, value: string } }) {
+    // TODO: убрать эту проверку
     if (event.target.id === this.fieldName) {
       this.changeNewTodoName(event.target.value);
     }

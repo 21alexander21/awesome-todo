@@ -34,7 +34,7 @@ export default class TodoItem extends React.Component<TodoItemProps, TodoItemSta
     };
   }
 
-  field: ?React.Element<Input>
+  field: ?Input;
 
   makeEditable() {
     this.setState(
@@ -42,16 +42,17 @@ export default class TodoItem extends React.Component<TodoItemProps, TodoItemSta
         onEditing: true,
       },
       () => {
-        if (this.field instanceof Input && typeof this.field.setSelectionRange === 'function') {
-          this.field.focus();
-          this.field.setSelectionRange(0, this.state.editableName.length);
+        const { field } = this;
+        if (field instanceof Input && typeof field.setSelectionRange === 'function') {
+          field.focus();
+          field.setSelectionRange(0, this.state.editableName.length);
         }
       },
     );
   }
 
-  changeHandler(event: SyntheticKeyboardEvent<HTMLInputElement>): void {
-    const newName: string = event.target.value;
+  changeHandler(_: *, value: string): void {
+    const newName: string = value;
 
     this.setState({
       editableName: newName,

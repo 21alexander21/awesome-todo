@@ -1,6 +1,6 @@
 // @flow
 import React from 'react';
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import { BrowserRouter as Router, Route } from 'react-router-dom';
 import Header from '../../components/Header';
 import List from '../../components/List';
 import Navigation from '../../components/Navigation';
@@ -33,57 +33,74 @@ export default class App extends React.Component<{}, AppState> {
     this.loadData();
   }
 
+  // TODO: передавать api через пропсы
   api = new FakeApi();
 
   loadData() {
-    this.setState({
-      fetching: true,
-    }, () => {
-      this.api.getAllTodos().then((result) => {
-        this.setState({
-          fetching: false,
-          todos: result,
-        });
-      });
-    });
+    this.setState(
+      {
+        fetching: true,
+      },
+      () => {
+        this.api.getAllTodos().then(
+          (result) => {
+            this.setState({
+              fetching: false,
+              todos: result,
+            });
+          },
+          () => {
+            /* TODO: обработать ошибку */
+          },
+        );
+      },
+    );
   }
 
   createTodo(name: string): void {
-    this.setState({
-      fetching: true,
-    }, () => {
-      this.api.createTodo(name).then((resultTodo) => {
-        this.setState(prevState => ({
-          todos: [...prevState.todos, resultTodo],
-          fetching: false,
-        }));
-      }).catch(() => {
-        this.setState({
-          fetching: false,
-        });
-      });
-    });
+    this.setState(
+      {
+        fetching: true,
+      },
+      // TODO: вытащить из callback
+      () => {
+        this.api
+          .createTodo(name)
+          .then((resultTodo) => {
+            this.setState(prevState => ({
+              todos: [...prevState.todos, resultTodo],
+              fetching: false,
+            }));
+          })
+          .catch(() => {
+            // TODO: хорошо бы ошибку показать
+            this.setState({
+              fetching: false,
+            });
+          });
+      },
+    );
   }
 
   changeTodoName(id: string, newName: string) {
     this.setState(prevState => ({
-      todos: [
-        ...prevState.todos.map((item) => {
-          if (item.id === id) {
-            return {
-              ...item,
-              name: newName,
-            };
-          }
-          return item;
-        }),
-      ],
+      todos: prevState.todos.map((item) => {
+        if (item.id === id) {
+          return {
+            ...item,
+            name: newName,
+          };
+        }
+        return item;
+      }),
     }));
   }
 
+  // TODO: добаивть в FakeApi переключение и удаление
   toggleStatus(id: string) {
     this.setState(prevState => ({
       todos: [
+        // TODO: убрать спред перед .map
         ...prevState.todos.map((item) => {
           if (item.id === id) {
             return {
@@ -99,6 +116,7 @@ export default class App extends React.Component<{}, AppState> {
 
   removeTodo(id: string) {
     this.setState(prevState => ({
+      // TODO: убрать спред перед .filter
       todos: [...prevState.todos.filter(item => item.id !== id)],
     }));
   }
@@ -122,12 +140,10 @@ export default class App extends React.Component<{}, AppState> {
     return (
       <Router>
         <div className="app">
+          {/* TODO: сделать отдельные компоненты для оберток вместо передачи className */}
           <Header className="app__header" createTodo={this.createTodo} />
           <Navigation className="app__navigation" fetching={this.state.fetching} />
-          <Switch>
-            <Route exact path="/" render={this.renderTodosList} />
-            <Route exact path="/:filter" render={this.renderTodosList} />
-          </Switch>
+          <Route exact path="/(:filter)?" render={this.renderTodosList} />
         </div>
       </Router>
     );

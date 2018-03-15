@@ -10,7 +10,7 @@ type NavigationProps = {
     pathname: string,
   },
   history: {
-    push: (string) => void,
+    push: string => void,
   },
   fetching: boolean,
 };
@@ -31,7 +31,7 @@ const getFilterFromLocation = (location) => {
 class Navigation extends React.Component<NavigationProps> {
   static defaultProps = {
     className: null,
-  }
+  };
 
   getClassName() {
     const classNames = ['navigation'];
@@ -67,15 +67,13 @@ class Navigation extends React.Component<NavigationProps> {
 
   tabsChangeHandler = (event: SyntheticEvent<any>, filter: string): void => {
     this.changeLocation(filter);
-  }
+  };
 
   render() {
     return (
       <div className={this.getClassName()}>
-        <Tabs
-          value={getFilterFromLocation(this.props.location)}
-          onChange={this.tabsChangeHandler}
-        >
+        <Tabs value={getFilterFromLocation(this.props.location)} onChange={this.tabsChangeHandler}>
+          {/* TODO: использовать Link из react-router-dom */}
           <Tabs.Tab id="default">All</Tabs.Tab>
           <Tabs.Tab id="active">Active</Tabs.Tab>
           <Tabs.Tab id="completed">Completed</Tabs.Tab>
