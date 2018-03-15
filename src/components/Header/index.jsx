@@ -42,12 +42,9 @@ export default class Header extends React.Component<HeaderProps, HeaderState> {
 
     const { newTodoName } = this.state;
     if (typeof this.props.createTodo === 'function' && !!newTodoName) {
-      this.setState(
-        {
-          newTodoName: this.props.defaultNewTodoName,
-        },
-        () => this.props.createTodo(newTodoName),
-      );
+      this.setState({
+        newTodoName: this.props.defaultNewTodoName,
+      }, () => this.props.createTodo(newTodoName));
     }
   }
 

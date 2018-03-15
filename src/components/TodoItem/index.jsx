@@ -34,7 +34,7 @@ export default class TodoItem extends React.Component<TodoItemProps, TodoItemSta
     };
   }
 
-  field: ?Input;
+  field: ?React.Element<Input>
 
   makeEditable() {
     this.setState(
@@ -42,7 +42,7 @@ export default class TodoItem extends React.Component<TodoItemProps, TodoItemSta
         onEditing: true,
       },
       () => {
-        if (this.field) {
+        if (this.field instanceof Input && typeof this.field.setSelectionRange === 'function') {
           this.field.focus();
           this.field.setSelectionRange(0, this.state.editableName.length);
         }

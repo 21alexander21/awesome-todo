@@ -32,17 +32,6 @@ describe('Компонент <TodoItem />', () => {
     expect(wrapper).toBeEmptyRender();
   });
 
-  it('По двойному клику появляется инпут', () => {
-    const component = fullRenderComponent({
-      todoData: normalTodoData,
-      operations: normalOperations,
-    });
-
-    expect(component.find(Input)).not.toExist();
-    component.simulate('doubleclick');
-    expect(component.find(Input)).toHaveLength(1);
-  });
-
   it('По клику вызывается переключение состояния с идентификатором', () => {
     const component = fullRenderComponent({
       todoData: normalTodoData,
@@ -55,6 +44,70 @@ describe('Компонент <TodoItem />', () => {
     component.simulate('click');
 
     expect(component.props().operations.toggleStatus).toBeCalledWith(normalTodoData.id);
+  });
+
+  describe('Переименование тудушки', () => {
+    it('makeEditable работает', () => {
+      const component = renderComponent({
+        todoData: normalTodoData,
+      });
+
+      expect(component.state('onEditing')).toBeFalsy();
+      component.instance().makeEditable();
+      expect(component.state('onEditing')).toBeTruthy();
+    });
+
+    it('По двойному клику появляется инпут', () => {
+      const component = fullRenderComponent({
+        todoData: normalTodoData,
+        operations: normalOperations,
+      });
+
+      expect(component.find(Input).length).toBe(0);
+      component.simulate('doubleclick');
+      expect(component.find(Input).length).toBe(1);
+    });
+
+    it('Для переименования передается идентификатор и новое имя тудушки', () => {
+      const component = fullRenderComponent({
+        todoData: normalTodoData,
+        operations: {
+          ...normalOperations,
+          changeTodoName: jest.fn(),
+        },
+      });
+
+      component.setState({ editableName: 'New name' });
+      component.instance().submitName();
+      expect(component.props().operations.changeTodoName).toBeCalledWith(normalTodoData.id, 'New name');
+    });
+
+    it('Отмена изменения', () => {
+      const component = renderComponent({
+        todoData: normalTodoData,
+      });
+      const initialName = component.instance().props.todoData.name;
+
+      expect(component.state('editableName')).toEqual(initialName);
+
+      component.setState({ editableName: 'Начали писать новое имя' });
+      component.instance().cancel();
+
+      expect(component.state('editableName')).toEqual(initialName);
+    });
+
+    it('При вводе значение пишется в state', () => {
+      const component = renderComponent({
+        todoData: normalTodoData,
+      });
+
+      expect(component.state('editableName')).toEqual(component.instance().props.todoData.name);
+
+      component.setState({ onEditing: true });
+      component.find(Input).simulate('change', { target: { value: 'Новое имя тудухи' } });
+
+      expect(component.state('editableName')).toEqual('Новое имя тудухи');
+    });
   });
 
   it('Для удаления передается идентификатор тудушки', () => {
@@ -70,17 +123,11 @@ describe('Компонент <TodoItem />', () => {
     expect(component.props().operations.removeTodo).toBeCalledWith(normalTodoData.id);
   });
 
-  it('Для переименования передается идентификатор и новое имя тудушки', () => {
-    const component = fullRenderComponent({
-      todoData: normalTodoData,
-      operations: {
-        ...normalOperations,
-        changeTodoName: jest.fn(),
-      },
-    });
+  it('Если тудушка выполнена, навешивается класс "todo-item__name--done"', () => {
+    const component = renderComponent();
 
-    component.instance().changeHandler({ target: { value: 'New name' } });
-    component.instance().submitName();
-    expect(component.props().operations.changeTodoName).toBeCalledWith(normalTodoData.id, 'New name');
+    expect(component.find('.todo-item__name')).not.toHaveClassName('todo-item__name--done');
+    component.setProps({ todoData: { done: true } });
+    expect(component.find('.todo-item__name')).toHaveClassName('todo-item__name--done');
   });
 });
