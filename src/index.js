@@ -2,9 +2,13 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './containers/app';
-import registerServiceWorker from './registerServiceWorker';
+import { FakeApi } from './utils';
 import './static/styles/global.css';
-// import { FakeApi } from './utils/index';
 
-ReactDOM.render(<App />, document.getElementById('root'));
-registerServiceWorker();
+const container = document && document.getElementById('root');
+
+if (!container) {
+  throw new Error('Нет элемента, в котором рендерится React');
+}
+
+ReactDOM.render(<App api={new FakeApi()} />, container);

@@ -6,8 +6,7 @@ import Button from '@skbkontur/react-ui/Button';
 import './assets/styles/styles.css';
 
 type HeaderProps = {
-  createTodo: (name: string) => void,
-  className: string,
+  createTodo: Function,
   defaultNewTodoName?: string,
 };
 
@@ -17,38 +16,27 @@ type HeaderState = {
 
 export default class Header extends React.Component<HeaderProps, HeaderState> {
   static defaultProps = {
-    className: null,
     defaultNewTodoName: '',
   };
 
-  constructor(props: HeaderProps) {
-    super(props);
+  state = {
+    newTodoName: this.props.defaultNewTodoName || '',
+  };
 
-    (this: any).changeHandler = this.changeHandler.bind(this);
-    (this: any).submitHandler = this.submitHandler.bind(this);
-
-    this.state = {
-      newTodoName: props.defaultNewTodoName || '',
-    };
-  }
-
-  fieldName: string = 'newTodoName';
-
-  submitHandler(event: ?SyntheticKeyboardEvent<HTMLButtonElement>) {
+  handleSubmit = (event: ?SyntheticKeyboardEvent<HTMLButtonElement>): void => {
     if (event) {
       event.preventDefault();
     }
 
     const { newTodoName } = this.state;
-    if (typeof this.props.createTodo === 'function' && !!newTodoName) {
-      this.setState(
-        {
-          newTodoName: this.props.defaultNewTodoName,
-        },
-        () => this.props.createTodo(newTodoName),
-      );
+    if (newTodoName) {
+      this.setState({
+        newTodoName: this.props.defaultNewTodoName,
+      });
+
+      this.props.createTodo(newTodoName);
     }
-  }
+  };
 
   changeNewTodoName(name: string) {
     this.setState({
@@ -56,32 +44,29 @@ export default class Header extends React.Component<HeaderProps, HeaderState> {
     });
   }
 
-  changeHandler(event: { target: { id: string, value: string } }) {
-    // TODO: убрать эту проверку
-    if (event.target.id === this.fieldName) {
-      this.changeNewTodoName(event.target.value);
-    }
-  }
+  handleChange = (event: { target: { id: string, value: string } }): void => {
+    this.changeNewTodoName(event.target.value);
+  };
 
   render() {
     return (
-      <header className={`header ${this.props.className ? this.props.className : ''}`}>
+      <header className="header">
         <form
-          onChange={this.changeHandler}
-          onSubmit={this.submitHandler}
+          onChange={this.handleChange}
+          onSubmit={this.handleSubmit}
           className="header__editor"
         >
           <Group width="100%">
             <Input
               mainInGroup
               value={this.state.newTodoName}
-              onChange={this.changeHandler}
+              onChange={this.handleChange}
               placeholder="What to do?"
-              id={this.fieldName}
+              id="newTodoName"
               size="large"
               className="header__field"
             />
-            <Button icon="add" onClick={this.submitHandler} type="submit" size="large">
+            <Button icon="add" onClick={this.handleSubmit} type="submit" size="large">
               Add
             </Button>
           </Group>

@@ -53,7 +53,7 @@ describe('Компонент <Header />', () => {
     const component = renderComponent();
 
     component.setState({ newTodoName: 'Новое имя' });
-    component.instance().submitHandler();
+    component.instance().handleSubmit();
 
     expect(component.instance().props.createTodo).toBeCalledWith('Новое имя');
   });
@@ -63,7 +63,7 @@ describe('Компонент <Header />', () => {
     const defaultName = component.state('newTodoName');
 
     component.setState({ newTodoName: 'Новое имя 43 52' });
-    component.instance().submitHandler();
+    component.instance().handleSubmit();
 
     expect(component.state('newTodoName')).toEqual(defaultName);
   });

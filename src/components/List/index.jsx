@@ -18,7 +18,7 @@ type ListProps = {
   fetching: boolean,
 };
 
-const getFilteredTodos = (todos: Array<Todo>, filter: ?string) => {
+const getFilteredTodos = (todos: Array<Todo>, filter: ?string): Array<Todo> => {
   switch (filter) {
     case 'active':
       return todos.filter(item => !item.done);

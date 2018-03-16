@@ -11,78 +11,61 @@ import './assets/styles/styles.css';
 type AppState = {
   todos: Array<Todo>,
   fetching: boolean,
+  creatingError: ?Error,
+  loadingError: ?Error,
 };
 
-export default class App extends React.Component<{}, AppState> {
-  constructor(props: {}) {
-    super(props);
-
-    (this: any).createTodo = this.createTodo.bind(this);
-    (this: any).changeTodoName = this.changeTodoName.bind(this);
-    (this: any).toggleStatus = this.toggleStatus.bind(this);
-    (this: any).removeTodo = this.removeTodo.bind(this);
-    (this: any).renderTodosList = this.renderTodosList.bind(this);
-
-    this.state = {
-      todos: [],
-      fetching: false,
-    };
-  }
+export default class App extends React.Component<{api: FakeApi}, AppState> {
+  state = {
+    todos: [],
+    fetching: false,
+    creatingError: null,
+    loadingError: null,
+  };
 
   componentDidMount() {
     this.loadData();
   }
 
-  // TODO: передавать api через пропсы
-  api = new FakeApi();
+  api = this.props.api;
 
-  loadData() {
-    this.setState(
-      {
-        fetching: true,
-      },
-      () => {
-        this.api.getAllTodos().then(
-          (result) => {
-            this.setState({
-              fetching: false,
-              todos: result,
-            });
-          },
-          () => {
-            /* TODO: обработать ошибку */
-          },
-        );
-      },
-    );
+  loadData = async (): Promise<*> => {
+    this.setState({ fetching: true });
+
+    try {
+      const result = await this.api.getAllTodos();
+      this.setState({
+        todos: result,
+      });
+    } catch (error) {
+      this.setState({
+        loadingError: error,
+      });
+    } finally {
+      this.setState({ fetching: false });
+    }
   }
 
-  createTodo(name: string): void {
-    this.setState(
-      {
-        fetching: true,
-      },
-      // TODO: вытащить из callback
-      () => {
-        this.api
-          .createTodo(name)
-          .then((resultTodo) => {
-            this.setState(prevState => ({
-              todos: [...prevState.todos, resultTodo],
-              fetching: false,
-            }));
-          })
-          .catch(() => {
-            // TODO: хорошо бы ошибку показать
-            this.setState({
-              fetching: false,
-            });
-          });
-      },
-    );
-  }
+  createTodo = async (name: string): Promise<*> => {
+    this.setState({
+      fetching: true,
+    });
 
-  changeTodoName(id: string, newName: string) {
+    try {
+      const result: Todo = await this.api.createTodo(name);
+      this.setState(prevState => ({
+        todos: [...prevState.todos, result],
+      }));
+    } catch (error) {
+      this.setState({
+        creatingError: error,
+      });
+    } finally {
+      this.setState({ fetching: false });
+    }
+  };
+
+  changeTodoName = (id: string, newName: string): void => {
     this.setState(prevState => ({
       todos: prevState.todos.map((item) => {
         if (item.id === id) {
@@ -94,56 +77,53 @@ export default class App extends React.Component<{}, AppState> {
         return item;
       }),
     }));
-  }
+  };
 
   // TODO: добаивть в FakeApi переключение и удаление
-  toggleStatus(id: string) {
+  toggleStatus = (id: string): void => {
     this.setState(prevState => ({
-      todos: [
-        // TODO: убрать спред перед .map
-        ...prevState.todos.map((item) => {
-          if (item.id === id) {
-            return {
-              ...item,
-              done: !item.done,
-            };
-          }
-          return item;
-        }),
-      ],
+      todos: prevState.todos.map((item) => {
+        if (item.id === id) {
+          return {
+            ...item,
+            done: !item.done,
+          };
+        }
+        return item;
+      }),
     }));
-  }
+  };
 
-  removeTodo(id: string) {
+  removeTodo = (id: string): void => {
     this.setState(prevState => ({
-      // TODO: убрать спред перед .filter
-      todos: [...prevState.todos.filter(item => item.id !== id)],
+      todos: prevState.todos.filter(item => item.id !== id),
     }));
-  }
+  };
 
-  renderTodosList() {
-    return (
-      <List
-        className="app__list"
-        todos={this.state.todos}
-        operations={{
-          removeTodo: this.removeTodo,
-          changeTodoName: this.changeTodoName,
-          toggleStatus: this.toggleStatus,
-        }}
-        fetching={this.state.fetching}
-      />
-    );
-  }
+  renderTodosList = () => (
+    <List
+      className="app__list"
+      todos={this.state.todos}
+      operations={{
+        removeTodo: this.removeTodo,
+        changeTodoName: this.changeTodoName,
+        toggleStatus: this.toggleStatus,
+      }}
+      fetching={this.state.fetching}
+    />
+  )
 
   render() {
     return (
       <Router>
         <div className="app">
-          {/* TODO: сделать отдельные компоненты для оберток вместо передачи className */}
-          <Header className="app__header" createTodo={this.createTodo} />
-          <Navigation className="app__navigation" fetching={this.state.fetching} />
-          <Route exact path="/(:filter)?" render={this.renderTodosList} />
+          <div className="app__header">
+            <Header createTodo={this.createTodo} creatingError={this.state.creatingError} />
+          </div>
+          <div className="app__navigation">
+            <Navigation fetching={this.state.fetching} />
+          </div>
+          <Route exact path="/:filter?" render={this.renderTodosList} />
         </div>
       </Router>
     );

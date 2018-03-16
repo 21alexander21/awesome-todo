@@ -104,7 +104,7 @@ describe('Компонент <TodoItem />', () => {
       expect(component.state('editableName')).toEqual(component.instance().props.todoData.name);
 
       component.setState({ onEditing: true });
-      component.find(Input).simulate('change', { target: { value: 'Новое имя тудухи' } });
+      component.find(Input).simulate('change', {}, 'Новое имя тудухи');
 
       expect(component.state('editableName')).toEqual('Новое имя тудухи');
     });

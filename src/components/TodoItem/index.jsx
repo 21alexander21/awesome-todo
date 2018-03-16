@@ -17,33 +17,21 @@ type TodoItemState = {
 };
 
 export default class TodoItem extends React.Component<TodoItemProps, TodoItemState> {
-  constructor(props: TodoItemProps) {
-    super(props);
-
-    (this: any).makeEditable = this.makeEditable.bind(this);
-    (this: any).changeHandler = this.changeHandler.bind(this);
-    (this: any).submitName = this.submitName.bind(this);
-    (this: any).keyDownHandler = this.keyDownHandler.bind(this);
-    (this: any).toggleStatus = this.toggleStatus.bind(this);
-    (this: any).removeItem = this.removeItem.bind(this);
-    (this: any).todoClickHandler = this.todoClickHandler.bind(this);
-
-    this.state = {
-      onEditing: false,
-      editableName: props.todoData ? props.todoData.name : '',
-    };
-  }
+  state = {
+    onEditing: false,
+    editableName: this.props.todoData ? this.props.todoData.name : '',
+  };
 
   field: ?Input;
 
-  makeEditable() {
+  makeEditable = (): void => {
     this.setState(
       {
         onEditing: true,
       },
       () => {
         const { field } = this;
-        if (field instanceof Input && typeof field.setSelectionRange === 'function') {
+        if (field) {
           field.focus();
           field.setSelectionRange(0, this.state.editableName.length);
         }
@@ -51,7 +39,7 @@ export default class TodoItem extends React.Component<TodoItemProps, TodoItemSta
     );
   }
 
-  changeHandler(_: *, value: string): void {
+  changeHandler = (_: *, value: string): void => {
     const newName: string = value;
 
     this.setState({
@@ -59,25 +47,22 @@ export default class TodoItem extends React.Component<TodoItemProps, TodoItemSta
     });
   }
 
-  submitName() {
-    this.setState(
-      {
-        onEditing: false,
-      },
-      () => {
-        this.props.operations.changeTodoName(this.props.todoData.id, this.state.editableName);
-      },
-    );
+  submitName = (): void => {
+    this.setState({
+      onEditing: false,
+    });
+
+    this.props.operations.changeTodoName(this.props.todoData.id, this.state.editableName);
   }
 
-  cancel() {
+  cancel = (): void => {
     this.setState({
       onEditing: false,
       editableName: this.props.todoData.name,
     });
   }
 
-  keyDownHandler(event: SyntheticKeyboardEvent<Input>) {
+  keyDownHandler = (event: SyntheticKeyboardEvent<Input>): void => {
     if (event.keyCode === 27 || event.key === 'Escape') {
       this.cancel();
     }
@@ -87,15 +72,15 @@ export default class TodoItem extends React.Component<TodoItemProps, TodoItemSta
     }
   }
 
-  toggleStatus() {
+  toggleStatus = (): void => {
     this.props.operations.toggleStatus(this.props.todoData.id);
   }
 
-  removeItem() {
+  removeItem = (): void => {
     this.props.operations.removeTodo(this.props.todoData.id);
   }
 
-  todoClickHandler() {
+  todoClickHandler = (): void => {
     this.toggleStatus();
   }
 
