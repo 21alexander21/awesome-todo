@@ -1,21 +1,13 @@
 import React from 'react';
-import {
-  shallow,
-  mount,
-} from 'enzyme';
+import { shallow } from 'enzyme';
 import App from '../';
 import { FakeApi } from '../../../utils';
 
 const renderComponent = () => shallow(React.createElement(App, { api: new FakeApi() }));
-const fullRenderComponent = () => mount(React.createElement(App, { api: new FakeApi() }));
 
 describe('Контэйнер <App />', () => {
   it('Рендер', () => {
-    expect(renderComponent()).toHaveLength(1);
-  });
-
-  it('Список тудушек рэндерится', () => {
-    expect(fullRenderComponent().find('List')).toHaveLength(1);
+    expect(renderComponent()).toExist();
   });
 
   describe('Получение данных', () => {

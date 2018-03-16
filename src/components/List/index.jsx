@@ -7,7 +7,7 @@ import type { Todo, TodoId } from '../../utils/types';
 import './assets/styles/styles.css';
 
 type ListProps = {
-  todos: Array<Todo>,
+  todos?: Array<Todo>,
   match: {
     params: {
       filter?: string,
@@ -62,6 +62,7 @@ const List = (props: ListProps) => {
 
 List.defaultProps = {
   todoIdFetching: null,
+  todos: [],
 };
 
 export default withRouter(List);
