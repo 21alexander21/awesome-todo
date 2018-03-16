@@ -36,7 +36,7 @@ export default class App extends React.Component<{api: FakeApi}, AppState> {
 
   api = this.props.api;
 
-  loadData = async (): Promise<*> => {
+  loadData = async (): Promise<void> => {
     this.setState({ fetching: true });
 
     try {
@@ -46,16 +46,17 @@ export default class App extends React.Component<{api: FakeApi}, AppState> {
       });
     } catch (error) {
       this.setState({
-        loadingError: error,
+        loadingError: error.message,
       });
     } finally {
       this.setState({ fetching: false });
     }
   }
 
-  createTodo = async (name: string): Promise<*> => {
+  createTodo = async (name: string): Promise<void> => {
     this.setState({
       fetching: true,
+      creatingError: null,
     });
 
     try {
@@ -72,7 +73,7 @@ export default class App extends React.Component<{api: FakeApi}, AppState> {
     }
   };
 
-  changeTodoName = async (id: TodoId, name: TodoName): Promise<*> => {
+  changeTodoName = async (id: TodoId, name: TodoName): Promise<void> => {
     this.setState({
       todoIdFetching: id,
       todoError: null,
@@ -105,7 +106,7 @@ export default class App extends React.Component<{api: FakeApi}, AppState> {
     }
   };
 
-  toggleStatus = async (id: TodoId): Promise<*> => {
+  toggleStatus = async (id: TodoId): Promise<void> => {
     this.setState({
       todoIdFetching: id,
     });
@@ -137,7 +138,7 @@ export default class App extends React.Component<{api: FakeApi}, AppState> {
     }
   };
 
-  removeTodo = async (id: string): Promise<*> => {
+  removeTodo = async (id: string): Promise<void> => {
     this.setState({ fetching: true });
     try {
       await this.api.removeTodo(id);
@@ -146,7 +147,7 @@ export default class App extends React.Component<{api: FakeApi}, AppState> {
       }));
     } catch (error) {
       this.setState({
-        loadingError: error,
+        loadingError: error.message,
       });
     } finally {
       this.setState({ fetching: false });
