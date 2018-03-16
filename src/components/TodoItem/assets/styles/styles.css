@@ -1,4 +1,5 @@
 .todo-item {
+    position: relative;
     padding: 0 40px;
     transition: all 0.3s ease-in;
     cursor: pointer;
@@ -20,4 +21,9 @@
 .todo-item__name--done {
     text-decoration: line-through;
     color: #8b8b8b;
+}
+
+.todo-item__spinner {
+    position: absolute;
+    transform: translateX(-25px);
 }

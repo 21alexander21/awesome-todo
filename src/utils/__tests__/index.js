@@ -25,6 +25,20 @@ describe('валидация тудушек', () => {
 });
 
 describe('Фейковое api', () => {
+  const badNamesTestcase = [
+    null,
+    undefined,
+    '',
+    ' ',
+    '     ',
+  ];
+  const goodNamesTestcase = [
+    'Сделай это',
+    'Сделай то',
+    '   и это',
+    '              1',
+  ];
+
   it('Возвращается правильное количество тудушек', async () => {
     const fakeApi = new FakeApi();
     const initialTodoCount = FakeApi.initialData.length;
@@ -43,40 +57,43 @@ describe('Фейковое api', () => {
   describe('Создание тудушек:', () => {
     const fakeApi = new FakeApi();
     describe('Эксепшен при создании тудушки с невалидным именем:', () => {
-      const badNamesTestcase = [
-        null,
-        undefined,
-        '',
-        ' ',
-        '     ',
-      ];
-  
       badNamesTestcase.forEach((name) => {
         it(`Имя - "${name}"`, async () => {
           expect.assertions(1);
-          try {
-            await fakeApi.createTodo(name);
-          } catch (error) {
-            expect(error).toBeInstanceOf(Error);
-          }
+          await expect(fakeApi.createTodo(name)).rejects.toBeInstanceOf(Error);
         });
       });
     });
 
     describe('Тудушки с правильным именем создаются и возвращаются:', () => {
-      const goodNamesTestcase = [
-        'Сделай это',
-        'Сделай то',
-        '   и это',
-        '              1',
-      ];
-
       goodNamesTestcase.forEach((name) => {
         it(`Имя - "${name}"`, async () => {
           expect.assertions(1);
-          const createdTodo = await fakeApi.createTodo(name);
-          expect(createdTodo.name).toBe(name);
+          await expect(fakeApi.createTodo(name)).resolves.toMatchObject({
+            name,
+          });
         });
+      });
+    });
+
+    describe('Переименование', () => {
+      goodNamesTestcase.forEach((name) => {
+        it(`Валидное имя - "${name}"`, async () => {
+          expect.assertions(1);
+          await expect(fakeApi.renameTodo('_aabbccddee', name)).resolves.toEqual({ id: '_aabbccddee', name });
+        });
+      });
+
+      badNamesTestcase.forEach((name) => {
+        it(`Не валидное имя - "${name}"`, async () => {
+          expect.assertions(1);
+          await expect(fakeApi.renameTodo('_aabbccddee', name)).rejects.toBeInstanceOf(Error);
+        });
+      });
+
+      test('Без идентификатора вернется ошибка', async () => {
+        expect.assertions(1);
+        await expect(fakeApi.renameTodo(null, 'Валидное имя')).rejects.toBeInstanceOf(Error);
       });
     });
   });

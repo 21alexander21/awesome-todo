@@ -1,5 +1,5 @@
 // @flow
-import type { Todo } from './types';
+import type { Todo, TodoId, TodoName } from './types';
 
 export const makeId = (length: number = 9) =>
   `_${Math.random()
@@ -55,7 +55,7 @@ export class FakeApi {
   getAllTodos = (): Promise<Array<Todo>> =>
     new Promise(resolve => setTimeout(() => resolve(FakeApi.initialData), 3000));
 
-  createTodo = (name: string): Promise<Todo> => new Promise((resolve, reject) => {
+  createTodo = (name: TodoName): Promise<Todo> => new Promise((resolve, reject) => {
     setTimeout(() => {
       if (isValidTodoName(name)) {
         const todo = {
@@ -70,4 +70,35 @@ export class FakeApi {
       reject(new Error('Не валидное имя тудушки'));
     }, 1500);
   });
+
+  renameTodo = (id: TodoId, name: TodoName): Promise<{ id: TodoId, name: TodoName }> =>
+    new Promise((resolve, reject) => {
+      setTimeout(() => {
+        if (!id) {
+          reject(new Error('id является обязательным параметром'));
+        }
+
+        if (isValidTodoName(name)) {
+          resolve({
+            id,
+            name,
+          });
+        }
+
+        reject(new Error('Не валидное имя тудушки'));
+      }, 2000);
+    });
+
+  toggleTodo = (id: TodoId): Promise<TodoId> =>
+    new Promise(resolve => setTimeout(() => resolve(id), 1000));
+
+  removeTodo = (id: TodoId): Promise<*> =>
+    new Promise((resolve, reject) => {
+      setTimeout(() => {
+        if (id) {
+          resolve();
+        }
+        reject();
+      }, 1000);
+    });
 }

@@ -5,7 +5,7 @@ import Header from '../../components/Header';
 import List from '../../components/List';
 import Navigation from '../../components/Navigation';
 import { FakeApi } from '../../utils';
-import type { Todo } from '../../utils/types';
+import type { Todo, TodoId, TodoName } from '../../utils/types';
 import './assets/styles/styles.css';
 
 type AppState = {
@@ -13,6 +13,11 @@ type AppState = {
   fetching: boolean,
   creatingError: ?Error,
   loadingError: ?Error,
+  todoError: ?{
+    id: TodoId,
+    error: string,
+  },
+  todoIdFetching: ?TodoId,
 };
 
 export default class App extends React.Component<{api: FakeApi}, AppState> {
@@ -21,6 +26,8 @@ export default class App extends React.Component<{api: FakeApi}, AppState> {
     fetching: false,
     creatingError: null,
     loadingError: null,
+    todoError: null,
+    todoIdFetching: null,
   };
 
   componentDidMount() {
@@ -65,52 +72,101 @@ export default class App extends React.Component<{api: FakeApi}, AppState> {
     }
   };
 
-  changeTodoName = (id: string, newName: string): void => {
-    this.setState(prevState => ({
-      todos: prevState.todos.map((item) => {
-        if (item.id === id) {
-          return {
-            ...item,
-            name: newName,
-          };
-        }
-        return item;
-      }),
-    }));
+  changeTodoName = async (id: TodoId, name: TodoName): Promise<*> => {
+    this.setState({
+      todoIdFetching: id,
+      todoError: null,
+    });
+
+    try {
+      const result = await this.api.renameTodo(id, name);
+      this.setState(prevState => ({
+        todos: prevState.todos.map((item) => {
+          if (item.id === result.id) {
+            return {
+              ...item,
+              name: result.name,
+            };
+          }
+          return item;
+        }),
+      }));
+    } catch (error) {
+      this.setState({
+        todoError: {
+          id,
+          error: error.message,
+        },
+      });
+    } finally {
+      this.setState({
+        todoIdFetching: null,
+      });
+    }
   };
 
-  // TODO: добаивть в FakeApi переключение и удаление
-  toggleStatus = (id: string): void => {
-    this.setState(prevState => ({
-      todos: prevState.todos.map((item) => {
-        if (item.id === id) {
-          return {
-            ...item,
-            done: !item.done,
-          };
-        }
-        return item;
-      }),
-    }));
+  toggleStatus = async (id: TodoId): Promise<*> => {
+    this.setState({
+      todoIdFetching: id,
+    });
+
+    try {
+      const result = await this.api.toggleTodo(id);
+      this.setState(prevState => ({
+        todos: prevState.todos.map((item) => {
+          if (item.id === result) {
+            return {
+              ...item,
+              done: !item.done,
+            };
+          }
+          return item;
+        }),
+      }));
+    } catch (error) {
+      this.setState({
+        todoError: {
+          id,
+          error: error.message,
+        },
+      });
+    } finally {
+      this.setState({
+        todoIdFetching: null,
+      });
+    }
   };
 
-  removeTodo = (id: string): void => {
-    this.setState(prevState => ({
-      todos: prevState.todos.filter(item => item.id !== id),
-    }));
+  removeTodo = async (id: string): Promise<*> => {
+    this.setState({ fetching: true });
+    try {
+      await this.api.removeTodo(id);
+      this.setState(prevState => ({
+        todos: prevState.todos.filter(item => item.id !== id),
+      }));
+    } catch (error) {
+      this.setState({
+        loadingError: error,
+      });
+    } finally {
+      this.setState({ fetching: false });
+    }
   };
 
   renderTodosList = () => (
-    <List
-      className="app__list"
-      todos={this.state.todos}
-      operations={{
-        removeTodo: this.removeTodo,
-        changeTodoName: this.changeTodoName,
-        toggleStatus: this.toggleStatus,
-      }}
-      fetching={this.state.fetching}
-    />
+    <div className="app__list">
+      <List
+        todos={this.state.todos}
+        operations={{
+          removeTodo: this.removeTodo,
+          changeTodoName: this.changeTodoName,
+          toggleStatus: this.toggleStatus,
+        }}
+        fetching={this.state.fetching}
+        todoError={this.state.todoError}
+        todoIdFetching={this.state.todoIdFetching}
+      />
+    </div>
   )
 
   render() {

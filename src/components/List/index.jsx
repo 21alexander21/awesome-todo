@@ -3,11 +3,10 @@ import * as React from 'react';
 import { withRouter } from 'react-router';
 import Spinner from '@skbkontur/react-ui/Spinner';
 import TodoItem from '../TodoItem';
-import type { Todo } from '../../utils/types';
+import type { Todo, TodoId } from '../../utils/types';
 import './assets/styles/styles.css';
 
 type ListProps = {
-  className?: string,
   todos: Array<Todo>,
   match: {
     params: {
@@ -16,6 +15,11 @@ type ListProps = {
   },
   operations: { [string]: Function },
   fetching: boolean,
+  todoIdFetching?: TodoId,
+  todoError: ?{
+    id: TodoId,
+    error: string,
+  },
 };
 
 const getFilteredTodos = (todos: Array<Todo>, filter: ?string): Array<Todo> => {
@@ -36,7 +40,7 @@ const List = (props: ListProps) => {
   const todos = getFilteredTodos(props.todos, filter);
 
   return (
-    <ul className={`list ${props.className ? props.className : ''}`}>
+    <ul className="list">
       {props.fetching && (
         <div className="list__spinner-container">
           <Spinner caption="Спиннер крутиться - тудушки грузятся..." />
@@ -44,7 +48,12 @@ const List = (props: ListProps) => {
       )}
       {todos.map(item => (
         <li className="list__item" key={item.id}>
-          <TodoItem todoData={item} operations={props.operations} />
+          <TodoItem
+            fetching={!!props.todoIdFetching && item.id === props.todoIdFetching}
+            todoData={item}
+            operations={props.operations}
+            error={!!props.todoError && props.todoError.id === item.id ? props.todoError.error : null}
+          />
         </li>
       ))}
     </ul>
@@ -52,7 +61,7 @@ const List = (props: ListProps) => {
 };
 
 List.defaultProps = {
-  className: null,
+  todoIdFetching: null,
 };
 
 export default withRouter(List);

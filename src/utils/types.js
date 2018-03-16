@@ -1,8 +1,12 @@
 // @flow
+export type TodoId = string;
+export type TodoName = string;
+export type TodoDone = boolean;
+
 export type Todo = {
-  id: string,
-  name: string,
-  done: boolean,
+  id: TodoId,
+  name: TodoName,
+  done: TodoDone,
 };
 
 export type Operations = {
