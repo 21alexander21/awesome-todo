@@ -1,15 +1,12 @@
 // @flow
 import * as React from 'react';
 import { Link } from 'react-router-dom';
-import { withRouter } from 'react-router';
+import { withRouter, type Location } from 'react-router';
 import Tabs from '@skbkontur/react-ui/Tabs';
 import './assets/styles/styles.css';
 
 type NavigationProps = {
-  className?: string,
-  location: {
-    pathname: string,
-  },
+  location: Location,
   fetching: boolean,
 };
 
@@ -34,24 +31,26 @@ class Navigation extends React.Component<NavigationProps> {
   getClassName = (): string => {
     const classNames = ['navigation'];
 
-    if (this.props.className) {
-      classNames.push(this.props.className);
-    }
-
     if (this.props.fetching) {
       classNames.push('navigation--fetching');
     }
 
     return classNames.join(' ');
-  }
+  };
 
   render() {
     return (
       <div className={this.getClassName()}>
         <Tabs value={getFilterFromLocation(this.props.location)}>
-          <Tabs.Tab component={Link} to="/" id="default">All</Tabs.Tab>
-          <Tabs.Tab component={Link} to="/active" id="active">Active</Tabs.Tab>
-          <Tabs.Tab component={Link} to="/completed" id="completed">Completed</Tabs.Tab>
+          <Tabs.Tab component={Link} to="/" id="default">
+            All
+          </Tabs.Tab>
+          <Tabs.Tab component={Link} to="/active" id="active">
+            Active
+          </Tabs.Tab>
+          <Tabs.Tab component={Link} to="/completed" id="completed">
+            Completed
+          </Tabs.Tab>
         </Tabs>
       </div>
     );

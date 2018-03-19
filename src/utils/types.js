@@ -6,11 +6,11 @@ export type TodoDone = boolean;
 export type Todo = {
   id: TodoId,
   name: TodoName,
-  done: TodoDone,
+  done: TodoDone
 };
 
 export type Operations = {
-  removeTodo: (id: string) => void,
-  changeTodoName: (id: string, name: string) => void,
-  toggleStatus: (id: string) => void,
+  removeTodo: (id: string) => Promise<void>,
+  changeTodoName: (id: string, name: string) => Promise<void>,
+  toggleStatus: (id: string) => Promise<void>
 };

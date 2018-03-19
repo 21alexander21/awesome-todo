@@ -3,7 +3,32 @@ import { shallow } from 'enzyme';
 import App from '../';
 import { FakeApi } from '../../../utils';
 
-const renderComponent = () => shallow(React.createElement(App, { api: new FakeApi() }));
+const mockTimeouts = () => {
+  const realSetTimeout = global.setTimeout;
+
+  const fakeSetTimeout = (cb, t, ctx) => {
+    realSetTimeout(cb, 0, ctx);
+  };
+
+  fakeSetTimeout.reset = () => {
+    global.setTimeout = realSetTimeout;
+  };
+
+  global.setTimeout = fakeSetTimeout;
+};
+
+const renderComponent = () =>
+  shallow(React.createElement(App, { api: new FakeApi() }), {
+    disableLifecycleMethods: true,
+  });
+
+beforeEach(() => {
+  mockTimeouts();
+});
+
+afterEach(() => {
+  global.setTimeout.reset();
+});
 
 describe('Контэйнер <App />', () => {
   it('Рендер', () => {
@@ -30,17 +55,21 @@ describe('Контэйнер <App />', () => {
       expect(component.instance().loadData).toHaveBeenCalledTimes(1);
     });
 
-    // it('флажок fetching устанавливается в стэйт на время загрузки и снимается после', async () => {
-    //   const component = renderComponent();
+    it('флажок fetching устанавливается в стэйт на время загрузки и снимается после', async () => {
+      const component = renderComponent();
 
-    //   expect(component.state('fetching')).toBeFalsy();
-    //   await component.instance().loadData();
-    //   expect(component.state('fetching')).toBeFalsy();
-    // });
+      expect(component.state('fetching')).toBeFalsy();
+      component.instance().componentDidMount();
+      expect(component.state('fetching')).toBeTruthy();
+      await component.instance().loadData();
+      expect(component.state('fetching')).toBeFalsy();
+    });
 
     it('В случае ошибки на сервере в стейт пишется текст ошибки', async () => {
       const component = renderComponent();
-      const mockApiMethod = jest.fn().mockImplementation(() => Promise.reject(new Error('Ошибка загрузки')));
+      const mockApiMethod = jest
+        .fn()
+        .mockImplementation(() => Promise.reject(new Error('Ошибка загрузки')));
       component.instance().api.getAllTodos = mockApiMethod;
 
       expect(component.state('loadingError')).toBeNull();
@@ -77,13 +106,14 @@ describe('Контэйнер <App />', () => {
       const newName = 'New name';
 
       component.setState({
-        todos: [
-          testTodo,
-        ],
+        todos: [testTodo],
       });
 
       await component.instance().changeTodoName(testTodo.id, newName);
-      expect(component.state('todos')).toContainEqual({ ...testTodo, name: newName });
+      expect(component.state('todos')).toContainEqual({
+        ...testTodo,
+        name: newName,
+      });
       expect(component.state('todos')).not.toContainEqual(testTodo);
     });
 
@@ -97,14 +127,15 @@ describe('Контэйнер <App />', () => {
       const newName = '';
 
       component.setState({
-        todos: [
-          testTodo,
-        ],
+        todos: [testTodo],
       });
 
       await component.instance().changeTodoName(testTodo.id, newName);
       expect(component.state('todos')).toContainEqual(testTodo);
-      expect(component.state('todos')).not.toContainEqual({ ...testTodo, name: newName });
+      expect(component.state('todos')).not.toContainEqual({
+        ...testTodo,
+        name: newName,
+      });
     });
 
     it('Переименование одной тудушки не затронет другие', async () => {
@@ -159,9 +190,7 @@ describe('Контэйнер <App />', () => {
       };
 
       component.setState({
-        todos: [
-          testTodo,
-        ],
+        todos: [testTodo],
       });
 
       await component.instance().toggleStatus(testTodo.id);
@@ -279,7 +308,9 @@ describe('Контэйнер <App />', () => {
 
     it('В случае ошибки на сервере, в стэйт должна записаться ошибка loadingError и тудушка остаться не тронутой', async () => {
       const component = renderComponent();
-      const mockApiMethod = jest.fn().mockImplementation(() => Promise.reject(new Error('Ошибка при удалении')));
+      const mockApiMethod = jest
+        .fn()
+        .mockImplementation(() => Promise.reject(new Error('Ошибка при удалении')));
       component.instance().api.removeTodo = mockApiMethod;
       component.setState({
         todos: [
